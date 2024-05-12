@@ -1,7 +1,7 @@
 import jwt
 
 # Clave secreta para firmar y verificar los tokens JWT
-SECRET_KEY = 'tu_secreto'
+SECRET_KEY = 'P0r3#ct0F1n@lM@3sTr1@'
 
 def generar_token(payload):
     """
