@@ -1,6 +1,6 @@
 DATABASE_CONFIG = {
-    'host': 'localhost',
-    'user': 'root',
-    'password': '@H0rt3#nci@95@',
+    'host': 'dbmaestria.cd6m886qm6zz.us-east-2.rds.amazonaws.com',
+    'user': 'admin',
+    'password': '3r1ck31-06#95',
     'database': 'pokemon',
 }
