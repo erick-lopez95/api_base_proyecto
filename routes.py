@@ -1,6 +1,7 @@
 from flask import Flask, jsonify, request
 from jwt_utils import generar_token, verificar_token
 from controllers.usuarios_controllers import UsuarioController
+import pdb
 
 app = Flask(__name__)
 usuario_controller = UsuarioController()
@@ -26,6 +27,7 @@ def login():
     # Supongamos que aquí tienes lógica para autenticar al usuario
     # y obtener su información (por ejemplo, user_id y role)
     user_id = 123
+    # pdb.set_trace() punto de interrupcion usando la libreria pdb
     role = 'admin'
 
     # Generar un token JWT con la información del usuario
