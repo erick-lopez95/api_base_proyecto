@@ -48,7 +48,18 @@ def obtener_usuarios():
 
     if payload:
         # El token es válido, puedes acceder a la información del payload
-        usuarios = usuario_controller.obtener_usuarios(payload)
-        return jsonify({'pokemon': usuarios})
+        response_json = usuario_controller.obtener_usuarios(payload)
+        return jsonify(response_json), response_json['status']
     else:
         return jsonify({'error': 'Token inválido o expirado.'}), 401
+      
+@app.route('/user/update', methods=['POST'])
+def update_user():
+  token = request.headers.get('Authorization')
+  payload = verificar_token(token)
+  
+  if payload:
+    response_json = usuario_controller.update_user(payload, request.json)
+    return jsonify(response_json), response_json['status']
+  else:
+    return jsonify({'error': 'Token inválido o expirado.'}), 401

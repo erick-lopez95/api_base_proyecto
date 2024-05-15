@@ -2,16 +2,27 @@ import pymysql
 from config import DATABASE_CONFIG
 from datetime import datetime
 from utils.bcrypt_utils import encrypt_password, check_password
+from utils.execute_query import execute_query, execute_query_fetchone, execute_query_fetchall
 import pdb
 
 class UsuarioModel:
-    def __init__(self, email=None, nickname=None, encrypted_password=None):
-    #     self.connection = pymysql.connect(**DATABASE_CONFIG)
+    def __init__(self, id=None, email=None, nickname=None, encrypted_password=None, cellphone=None, reset_passwrod=None, reset_password_send_at=None, created_at=None, updated_at=None):
+      self.id = id
       self.email = email
       self.nickname = nickname
+      self.cellphone = cellphone
+      self.reset_passwrod = reset_passwrod
       self.encrypted_password = encrypted_password
-      self.created_at = datetime.now()
-      self.updated_at = datetime.now()
+      self.reset_passwrod_send_at = reset_password_send_at
+      if created_at is not None:
+        self.created_at = created_at
+      else:
+        self.created_at = datetime.now()
+      
+      if updated_at is not None:
+        self.updated_at = updated_at
+      else:
+        self.updated_at = datetime.now()
     
     def save(self):
       existe = self.consultar_usuario_por_email(self.email)
@@ -22,60 +33,56 @@ class UsuarioModel:
         raise ValueError("Ya existe un usuario con este nickname.")
       
       try:    
-          connection = pymysql.connect(**DATABASE_CONFIG)
-          with connection.cursor() as cursor:
-              # Sentencia SQL para insertar un nuevo usuario en la tabla users
-              sql = "INSERT INTO users (email, nickname, encrypted_password, created_at, updated_at) VALUES (%s, %s, %s, %s, %s)"
-              
-              # Valores a insertar
-              values = (self.email, self.nickname, encrypt_password(self.encrypted_password), self.created_at, self.updated_at)
-              
-              # Ejecutar la sentencia SQL
-              cursor.execute(sql, values)
-              
-          # Confirmar la transacción
-          connection.commit()
-          
-          # Imprimir mensaje de éxito
-          return self
+          sql = "INSERT INTO users (email, nickname, cellphone, encrypted_password, created_at, updated_at) VALUES (%s, %s, %s, %s, %s, %s)"
+          values = (self.email, self.nickname, self.cellphone, encrypt_password(self.encrypted_password), self.created_at, self.updated_at)
+          return execute_query(sql,values)
 
       except Exception as e:
-          # Imprimir mensaje de error en caso de fallo
           raise ValueError("Error al crear usuario:", e)
-
-      finally:
-          # Cerrar la conexión con la base de datos
-          connection.close()
           
     def consultar_usuario_por_email(self, email):
       try:
-        connection = pymysql.connect(**DATABASE_CONFIG)
-        with connection.cursor() as cursor:
-          sql = "SELECT * FROM users where email = %s"
-          cursor.execute(sql, (email,))
-          usuario = cursor.fetchone()
-        return usuario
-      finally:
-        connection.close()
+        sql = "SELECT * FROM users where email = %s"
+        values = (email,)
+        return execute_query_fetchone(sql, values)
+      
+      except Exception as e:
+          raise ValueError("Error al consultar usuario:", e)
         
     def consultar_nickname(self, nickname):
       try:
-        connection = pymysql.connect(**DATABASE_CONFIG)
-        with connection.cursor() as cursor:
-          sql = "SELECT nickname FROM users where nickname = %s"
-          cursor.execute(sql, (nickname,))
-          usuario = cursor.fetchone()
-        return usuario
-      finally:
-        connection.close()
+        sql = "SELECT nickname FROM users where nickname = %s"
+        values = nickname
+        return execute_query_fetchone(sql, values)
+      
+      except Exception as e:
+        raise ValueError("Error al consultar usuario:", e)
 
     def obtener_usuarios(self):
         try:
-            connection = pymysql.connect(**DATABASE_CONFIG)
-            with connection.cursor() as cursor:
-                sql = "SELECT * FROM users"
-                cursor.execute(sql)
-                usuarios = cursor.fetchall()
-                return usuarios
-        finally:
-            connection.close()
+            sql = "SELECT * FROM users"
+            return execute_query_fetchall(sql)
+        except Exception as e:
+          raise ValueError("Error al consultar usuario:", e)
+    
+    def obtener_usuario_por_id(self, user_id):
+      sql = "SELECT * FROM users where id = %s"
+      values = user_id
+      result = execute_query_fetchone(sql, values)
+      
+      if result is None:
+        raise ValueError("No se encontro usuario con ese id")
+      
+      user = UsuarioModel(result[0], result[1], result[2], result[4], result[3], result[5], result[6], result[7], result[8])
+      return user
+    
+    def update(self, email, nickname, cellphone, user):
+      try:
+        sql = "UPDATE users SET email = %s, nickname = %s, cellphone = %s where id = %s"
+        values = (email, nickname, cellphone, user["user_id"])
+        execute_query(sql, values)
+        user = self.obtener_usuario_por_id(user["user_id"])
+        return user
+      except Exception as e:
+        raise ValueError("Error al actualizar usuario:", e)
+      

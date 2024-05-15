@@ -16,9 +16,28 @@ class UsuarioController:
       if json_data["password"] != json_data["confirm_password"]:
         return self.json_responder.json_response("Las contraseñas no coinciden", None, 422)
       
-      nuevo_usuario = UsuarioModel(email=json_data["email"], nickname=json_data["nickname"], encrypted_password=json_data["password"])
+      nuevo_usuario = UsuarioModel(email=json_data["email"], nickname=json_data["nickname"], encrypted_password=json_data["password"], cellphone=int(json_data["cellphone"]))
       nuevo_usuario.save()
       
       return self.json_responder.json_response("registro exitoso", nuevo_usuario.__dict__, 200)
     except Exception as e:
        return self.json_responder.json_response(str(e), None, 400)
+     
+  def update_user(self, current_user,  json):
+    try:
+      email = current_user["email"]
+      nickname = current_user["nickname"]
+      cellphone = current_user["cellphone"]
+      
+      if "email" in json and json["email"] is not None:
+        email = json["email"]
+      if "nickname" in json and json["nickname"] is not None:
+        nickname = json["nickname"]
+      if "cellphone" in json and json["cellphone"] is not None:
+        cellphone = json["cellphone"]
+      
+      update_user = self.usuario_model.update(email, nickname, cellphone, current_user)
+      
+      return self.json_responder.json_response("Actualación exitosa", update_user.__dict__, 200)
+    except Exception as e:
+      return self.json_responder.json_response(str(e),None,400)
