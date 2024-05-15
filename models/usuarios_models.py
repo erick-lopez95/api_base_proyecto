@@ -2,6 +2,7 @@ import pymysql
 from config import DATABASE_CONFIG
 from datetime import datetime
 from utils.bcrypt_utils import encrypt_password, check_password
+import pdb
 
 class UsuarioModel:
     def __init__(self, email=None, nickname=None, encrypted_password=None):
@@ -16,6 +17,9 @@ class UsuarioModel:
       existe = self.consultar_usuario_por_email(self.email)
       if existe is not None:
         raise ValueError("Ya existe un usuario con este correo electrónico.")
+      
+      if self.consultar_nickname(self.nickname) is not None:
+        raise ValueError("Ya existe un usuario con este nickname.")
       
       try:    
           connection = pymysql.connect(**DATABASE_CONFIG)
@@ -49,6 +53,17 @@ class UsuarioModel:
         with connection.cursor() as cursor:
           sql = "SELECT * FROM users where email = %s"
           cursor.execute(sql, (email,))
+          usuario = cursor.fetchone()
+        return usuario
+      finally:
+        connection.close()
+        
+    def consultar_nickname(self, nickname):
+      try:
+        connection = pymysql.connect(**DATABASE_CONFIG)
+        with connection.cursor() as cursor:
+          sql = "SELECT nickname FROM users where nickname = %s"
+          cursor.execute(sql, (nickname,))
           usuario = cursor.fetchone()
         return usuario
       finally:

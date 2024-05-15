@@ -8,16 +8,11 @@ usuario_controller = UsuarioController()
 
 @app.route('/login', methods=['POST'])
 def login():
-    # Supongamos que aquí tienes lógica para autenticar al usuario
-    # y obtener su información (por ejemplo, user_id y role)
-    user_id = 123
     # pdb.set_trace() punto de interrupcion usando la libreria pdb
-    role = 'admin'
 
     # Generar un token JWT con la información del usuario
-    token = generar_token({'user_id': user_id, 'role': role})
-
-    return jsonify({'token': token})
+    response_json = generar_token(request.json)
+    return jsonify(response_json), response_json['status']
 
 @app.route('/protected', methods=['GET'])
 def protected_route():
@@ -29,9 +24,8 @@ def protected_route():
 
     if payload:
         # El token es válido, puedes acceder a la información del payload
-        user_id = payload['user_id']
         role = payload['role']
-        return jsonify({'message': f'Acceso concedido para el usuario {user_id} con rol {role}.'})
+        return jsonify({'message': f'Acceso concedido para el usuario {payload['email']} con rol {role}.'})
     else:
         return jsonify({'error': 'Token inválido o expirado.'}), 401
 
@@ -54,7 +48,7 @@ def obtener_usuarios():
 
     if payload:
         # El token es válido, puedes acceder a la información del payload
-        usuarios = usuario_controller.obtener_usuarios()
+        usuarios = usuario_controller.obtener_usuarios(payload)
         return jsonify({'pokemon': usuarios})
     else:
         return jsonify({'error': 'Token inválido o expirado.'}), 401

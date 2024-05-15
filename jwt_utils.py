@@ -1,15 +1,26 @@
 import jwt
+from models.usuarios_models import UsuarioModel
+import pdb
+from utils.bcrypt_utils import check_password
 
 # Clave secreta para firmar y verificar los tokens JWT
 SECRET_KEY = 'P0r3#ct0F1n@lM@3sTr1@'
 
 def generar_token(payload):
-    """
-    Genera un token JWT con el payload proporcionado.
-    # Crear un payload con la información del usuario
-      payload = {'user_id': 123, 'role': 'admin'}
-    """
-    return jwt.encode(payload, SECRET_KEY, algorithm='HS256')
+    
+    usuario_model = UsuarioModel()
+    user = usuario_model.consultar_usuario_por_email(payload["email"])
+    
+    if user is None:
+      return {'response': {"message":"No se existe usuario con ese correo", "json": None}, "status": 400}
+    
+    if not check_password(payload["password"], user[3].encode('utf-8')):
+      return {'response': {"message":"La contraseña es incorrecta", "json": None}, "status": 422}
+    
+    token_content = {"user_id": user[0], "email": user[1], "nickname": user[2]}
+    token = jwt.encode(token_content, SECRET_KEY, algorithm='HS256')
+    
+    return {'response': {"message":"token generado", "json": token}, "status": 200}
 
 def verificar_token(token):
     """

@@ -8,7 +8,7 @@ class UsuarioController:
       self.usuario_model = UsuarioModel()
       self.json_responder = StructureJsonResponse()
 
-  def obtener_usuarios(self):
+  def obtener_usuarios(self,current_user):
       return self.usuario_model.obtener_usuarios()
     
   def create_user(self, json_data):
