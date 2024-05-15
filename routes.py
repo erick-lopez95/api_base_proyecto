@@ -63,3 +63,18 @@ def update_user():
     return jsonify(response_json), response_json['status']
   else:
     return jsonify({'error': 'Token inválido o expirado.'}), 401
+  
+@app.route('/user/get_by_email', methods=['GET'])
+def get_by_email():
+  token = request.headers.get('Authorization')
+  payload = verificar_token(token)
+  email = request.args.get('email')
+  
+  if not email:
+            return jsonify({'error': 'Falta el parámetro email'}), 400
+  
+  if payload:
+    response_json = usuario_controller.consultar_usuario(email)
+    return jsonify(response_json), response_json["status"]
+  else:
+    return jsonify({'error': 'Token invalido o expirado'}), 401

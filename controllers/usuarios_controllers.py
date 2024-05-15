@@ -41,3 +41,13 @@ class UsuarioController:
       return self.json_responder.json_response("Actualación exitosa", update_user.__dict__, 200)
     except Exception as e:
       return self.json_responder.json_response(str(e),None,400)
+    
+  def consultar_usuario(self, email):
+    try:
+      if email is None:
+        return self.json_responder.json_response("El email es obligatorio", None, 422)
+      
+      user = self.usuario_model.consultar_usuario_por_email(email)
+      return self.json_responder.json_response("Consulta exitosa", user.__dict__, 200)
+    except Exception as e:
+      return self.json_responder.json_response(str(e), None, 400)

@@ -44,7 +44,9 @@ class UsuarioModel:
       try:
         sql = "SELECT * FROM users where email = %s"
         values = (email,)
-        return execute_query_fetchone(sql, values)
+        result = execute_query_fetchone(sql, values)
+        user = UsuarioModel(result[0], result[1], result[2], result[4], result[3], result[5], result[6], result[7], result[8])
+        return user
       
       except Exception as e:
           raise ValueError("Error al consultar usuario:", e)
