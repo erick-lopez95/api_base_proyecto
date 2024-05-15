@@ -13,7 +13,11 @@ class UsuarioModel:
       self.updated_at = datetime.now()
     
     def save(self):
-      try:
+      existe = self.consultar_usuario_por_email(self.email)
+      if existe is not None:
+        raise ValueError("Ya existe un usuario con este correo electrónico.")
+      
+      try:    
           connection = pymysql.connect(**DATABASE_CONFIG)
           with connection.cursor() as cursor:
               # Sentencia SQL para insertar un nuevo usuario en la tabla users
@@ -38,12 +42,23 @@ class UsuarioModel:
       finally:
           # Cerrar la conexión con la base de datos
           connection.close()
+          
+    def consultar_usuario_por_email(self, email):
+      try:
+        connection = pymysql.connect(**DATABASE_CONFIG)
+        with connection.cursor() as cursor:
+          sql = "SELECT * FROM users where email = %s"
+          cursor.execute(sql, (email,))
+          usuario = cursor.fetchone()
+        return usuario
+      finally:
+        connection.close()
 
     def obtener_usuarios(self):
         try:
             connection = pymysql.connect(**DATABASE_CONFIG)
             with connection.cursor() as cursor:
-                sql = "SELECT * FROM pokemon"
+                sql = "SELECT * FROM users"
                 cursor.execute(sql)
                 usuarios = cursor.fetchall()
                 return usuarios

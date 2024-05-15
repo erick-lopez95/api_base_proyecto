@@ -14,11 +14,11 @@ class UsuarioController:
   def create_user(self, json_data):
     try:
       if json_data["password"] != json_data["confirm_password"]:
-        raise ValueError("Las contraseñas no coinciden")
+        return self.json_responder.json_response("Las contraseñas no coinciden", None, 422)
       
       nuevo_usuario = UsuarioModel(email=json_data["email"], nickname=json_data["nickname"], encrypted_password=json_data["password"])
       nuevo_usuario.save()
       
       return self.json_responder.json_response("registro exitoso", nuevo_usuario.__dict__, 200)
     except Exception as e:
-        self.json_responder.json_response(str(e), None, 400)
+       return self.json_responder.json_response(str(e), None, 400)

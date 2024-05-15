@@ -37,11 +37,11 @@ def protected_route():
 
 @app.route('/crear_usuario', methods=['POST'])
 def create_user():
-  try:
+  # try:
     response_json = usuario_controller.create_user(request.json)
-    return jsonify(response_json)
-  except ValueError as ve:
-    return jsonify(ve.args[0]), ve.args[0]['status']
+    return jsonify(response_json), response_json['status']
+  # except ValueError as ve:
+  #   return jsonify(ve.args[0]), ve.args[0]['status']
 
 
 @app.route('/user/consultar_usuario', methods=['GET'])
