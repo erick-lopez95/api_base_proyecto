@@ -71,10 +71,25 @@ def get_by_email():
   email = request.args.get('email')
   
   if not email:
-            return jsonify({'error': 'Falta el parámetro email'}), 400
+    return jsonify({'error': 'Falta el parámetro email'}), 400
   
   if payload:
     response_json = usuario_controller.consultar_usuario(email)
     return jsonify(response_json), response_json["status"]
   else:
     return jsonify({'error': 'Token invalido o expirado'}), 401
+  
+@app.route('/user/delete_by_id', methods=['DELETE'])
+def eliminar_usuario():
+  token = request.headers.get('Authorization')
+  payload = verificar_token(token)
+  user_id = request.args.get('user_id')
+  
+  if not user_id:
+    return jsonify({'error': 'Falta el parámetro user_id'}), 400
+  
+  if payload:
+    response_json = usuario_controller.eliminar_usuario(user_id)
+    return jsonify(response_json), response_json["status"]
+  else:
+    return jsonify({'error': 'Token inválido o expirado.'}), 400

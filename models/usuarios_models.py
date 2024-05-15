@@ -33,9 +33,9 @@ class UsuarioModel:
         raise ValueError("Ya existe un usuario con este nickname.")
       
       try:    
-          sql = "INSERT INTO users (email, nickname, cellphone, encrypted_password, created_at, updated_at) VALUES (%s, %s, %s, %s, %s, %s)"
-          values = (self.email, self.nickname, self.cellphone, encrypt_password(self.encrypted_password), self.created_at, self.updated_at)
-          return execute_query(sql,values)
+        sql = "INSERT INTO users (email, nickname, cellphone, encrypted_password, created_at, updated_at) VALUES (%s, %s, %s, %s, %s, %s)"
+        values = (self.email, self.nickname, self.cellphone, encrypt_password(self.encrypted_password), self.created_at, self.updated_at)
+        return execute_query(sql,values)
 
       except Exception as e:
           raise ValueError("Error al crear usuario:", e)
@@ -43,9 +43,14 @@ class UsuarioModel:
     def consultar_usuario_por_email(self, email):
       try:
         sql = "SELECT * FROM users where email = %s"
-        values = (email,)
+        values = email
         result = execute_query_fetchone(sql, values)
-        user = UsuarioModel(result[0], result[1], result[2], result[4], result[3], result[5], result[6], result[7], result[8])
+        
+        if result is not None:
+          user = UsuarioModel(result[0], result[1], result[2], result[4], result[3], result[5], result[6], result[7], result[8])
+        else:
+          user = None
+          
         return user
       
       except Exception as e:
@@ -87,4 +92,14 @@ class UsuarioModel:
         return user
       except Exception as e:
         raise ValueError("Error al actualizar usuario:", e)
-      
+    
+    def eliminar_usuario(self, user_id):
+      try:
+        sql = "DELETE FROM users WHERE id = %s"
+        values = user_id
+        user = self.obtener_usuario_por_id(user_id)
+        execute_query(sql, values)
+        return user
+      except Exception as e:
+        raise ValueError("Error al eliminar usuario:", e)
+            
