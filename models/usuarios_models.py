@@ -1,6 +1,7 @@
 import pymysql
 from config import DATABASE_CONFIG
 from datetime import datetime
+from utils.bcrypt_utils import encrypt_password, check_password
 
 class UsuarioModel:
     def __init__(self, email=None, nickname=None, encrypted_password=None):
@@ -19,7 +20,7 @@ class UsuarioModel:
               sql = "INSERT INTO users (email, nickname, encrypted_password, created_at, updated_at) VALUES (%s, %s, %s, %s, %s)"
               
               # Valores a insertar
-              values = (self.email, self.nickname, self.encrypted_password, self.created_at, self.updated_at)
+              values = (self.email, self.nickname, encrypt_password(self.encrypted_password), self.created_at, self.updated_at)
               
               # Ejecutar la sentencia SQL
               cursor.execute(sql, values)
