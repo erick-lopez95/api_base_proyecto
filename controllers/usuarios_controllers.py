@@ -2,6 +2,7 @@ from models.usuarios_models import UsuarioModel
 from flask import jsonify
 import pdb
 from structure_json_response import StructureJsonResponse
+from utils.bcrypt_utils import check_password, encrypt_password
 
 class UsuarioController:
   def __init__(self):
@@ -59,5 +60,22 @@ class UsuarioController:
       
       result = self.usuario_model.eliminar_usuario(user_id)
       return self.json_responder.json_response("Se elimino usuario correctamente", result.__dict__, 200)
-    except:
+    except Exception as e:
       return self.json_responder.json_response(str(e), None, 400)
+    
+  def actualizar_contra(self, json, current_user):
+    try:
+      if not check_password(json["password"], current_user["encrypted_password"].encode('utf-8')):
+        return {'response': {"message":"La contraseña actual no coincide con la contraseña recibida", "json": None}, "status": 422}
+      
+      if json["new_password"] != json["confirm_password"]:
+        return {'response': {"message":"La contraseña nueva contraseña no coinciden", "json": None}, "status": 422}
+
+      
+      password = encrypt_password(json["new_password"])
+      
+      user = self.usuario_model.actualizar_contra(password, current_user["user_id"])
+      
+      return self.json_responder.json_response("Constraseña actualizada", user.__dict__, 200)
+    except Exception as e:
+      return self.json_responder.json_response(str(e),None,400)

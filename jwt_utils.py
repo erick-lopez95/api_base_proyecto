@@ -17,7 +17,7 @@ def generar_token(payload):
     if not check_password(payload["password"], user.encrypted_password.encode('utf-8')):
       return {'response': {"message":"La contraseña es incorrecta", "json": None}, "status": 422}
     
-    token_content = {"user_id": user.id, "email": user.email, "nickname": user.nickname, "cellphone": user.cellphone}
+    token_content = {"user_id": user.id, "email": user.email, "nickname": user.nickname, "cellphone": user.cellphone, "encrypted_password": user.encrypted_password}
     token = jwt.encode(token_content, SECRET_KEY, algorithm='HS256')
     
     return {'response': {"message":"token generado", "json": token}, "status": 200}

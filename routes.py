@@ -93,3 +93,14 @@ def eliminar_usuario():
     return jsonify(response_json), response_json["status"]
   else:
     return jsonify({'error': 'Token inválido o expirado.'}), 400
+
+@app.route('/user/update_password', methods=['POST'])
+def update_password():
+  token = request.headers.get('Authorization')
+  payload = verificar_token(token)
+  
+  if payload:
+    response_json = usuario_controller.actualizar_contra(request.json, payload)
+    return jsonify(response_json), response_json["status"]
+  else:
+    return jsonify({'error': 'Token inválido o expirado.'}), 400

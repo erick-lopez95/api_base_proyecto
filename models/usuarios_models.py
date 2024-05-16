@@ -102,4 +102,13 @@ class UsuarioModel:
         return user
       except Exception as e:
         raise ValueError("Error al eliminar usuario:", e)
-            
+
+    def actualizar_contra(self, new_password, user_id):
+      try:
+        sql = "UPDATE users SET encrypted_password = %s WHERE id = %s"
+        values = (new_password, user_id)
+        execute_query(sql,values)
+        user = self.obtener_usuario_por_id(user_id)
+        return user
+      except Exception as e:
+        raise ValueError("Error al actualizar la contraseña:", e)            
