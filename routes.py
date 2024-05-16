@@ -104,3 +104,25 @@ def update_password():
     return jsonify(response_json), response_json["status"]
   else:
     return jsonify({'error': 'Token inválido o expirado.'}), 400
+
+@app.route('/sms/send', methods=['POST'])
+def send_sms():
+  token = request.headers.get('Authorization')
+  payload = verificar_token(token)
+  
+  if payload:
+    response_json = usuario_controller.enviar_sms(request.json)
+    return jsonify(response_json), response_json["status"]
+  else:
+    return jsonify({'error': 'Token inválido o expirado.'}), 400
+  
+@app.route('/recovery_password_token', methods=['POST'])
+def recovery_password_token():
+  token = request.headers.get('Authorization')
+  payload = verificar_token(token)
+  
+  if payload:
+    response_json = usuario_controller.enviar_token_recuperacion(request.json)
+    return jsonify(response_json), response_json["status"]
+  else:
+    return jsonify({'error': 'Token inválido o expirado.'}), 400

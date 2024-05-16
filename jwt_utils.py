@@ -1,5 +1,6 @@
 import jwt
 from models.usuarios_models import UsuarioModel
+import secrets
 import pdb
 from utils.bcrypt_utils import check_password
 
@@ -46,3 +47,8 @@ def verificar_token(token):
         # El token es inválido (puede ser porque ha sido alterado)
         # Manejar el error...
         return None
+      
+def generar_token_recuperacion(longitud=32):
+    # Genera un token de recuperación seguro con la longitud especificada
+    token = secrets.token_urlsafe(longitud)
+    return token

@@ -112,3 +112,13 @@ class UsuarioModel:
         return user
       except Exception as e:
         raise ValueError("Error al actualizar la contraseña:", e)            
+
+    def guardar_token_recuperacion(self, token, user_id):
+      try:
+        sql = "UPDATE users SET reset_password_token = %s, reset_password_sent_at = %s where id = %s"
+        values = (token, datetime.now(), user_id)
+        execute_query(sql, values)
+        user = self.obtener_usuario_por_id(user_id)
+        return user
+      except Exception as e:
+        raise ValueError("Error al actualizar usuario:", e)
