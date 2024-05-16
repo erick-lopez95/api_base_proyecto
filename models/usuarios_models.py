@@ -6,12 +6,12 @@ from utils.execute_query import execute_query, execute_query_fetchone, execute_q
 import pdb
 
 class UsuarioModel:
-    def __init__(self, id=None, email=None, nickname=None, encrypted_password=None, cellphone=None, reset_passwrod=None, reset_password_send_at=None, created_at=None, updated_at=None):
+    def __init__(self, id=None, email=None, nickname=None, encrypted_password=None, cellphone=None, reset_password_token=None, reset_password_send_at=None, created_at=None, updated_at=None):
       self.id = id
       self.email = email
       self.nickname = nickname
       self.cellphone = cellphone
-      self.reset_passwrod = reset_passwrod
+      self.reset_password_token = reset_password_token
       self.encrypted_password = encrypted_password
       self.reset_passwrod_send_at = reset_password_send_at
       if created_at is not None:
