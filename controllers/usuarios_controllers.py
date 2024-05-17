@@ -14,7 +14,7 @@ class UsuarioController:
 
   def enviar_sms(self, json):
     try:
-      
+      khgcvbkjghv
       if not "message" in json:
         return self.json_responder.json_response("El campo message es obligatorio",None,422)
       if json["message"] is None:
