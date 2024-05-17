@@ -198,3 +198,14 @@ def assign_rol():
     return jsonify(response_json), response_json["status"]
   else:
     return jsonify({'error': 'Token inválido o expirado.'}), 400
+
+@app.route('/rol/unassign', methods=['POST'])
+def unassign_role():
+  token = request.headers.get('Authorization')
+  payload = verificar_token(token)
+  
+  if payload:
+    response_json = roles_controller.unassign_role(request.json)
+    return jsonify(response_json), response_json["status"]
+  else:
+    return jsonify({'error': 'Token inválido o expirado.'}), 400

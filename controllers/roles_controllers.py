@@ -82,3 +82,24 @@ class RolesController:
       return self.json_responder.response("Se aigno el rol correctamente", user_rol.__dict__,200)
     except Exception as e:
       return self.json_responder.response(str(e), None, 400)
+    
+  def unassign_role(self, json):
+    try:
+      if not "rol_id" in json:
+        return self.json_responder.response("El campo rol_id es obligatorio")
+      if json["rol_id"] is None:
+        return self.json_responder.response("El campo rol_id no puede estar en blanco")
+      if not "user_id" in json:
+        return self.json_responder.response("El campo user_id es obligatorio")
+      if json["user_id"] is None:
+        return self.json_responder.response("El campo user_id no puede estar en blanco")
+      
+      rol_assign = self.user_roles.get_by_user_and_rol(json["user_id"], json["rol_id"])
+      if rol_assign is None:
+        return self.json_responder.response(f"El usuario usuario con id {json["user_id"]} no cuenta con el rol {json["rol_id"], None, 422}")
+      
+      self.user_roles.delete_by_userId_and_roleId(json["user_id"], json["rol_id"])
+      
+      return self.json_responder.response("Se aigno el rol correctamente", rol_assign.__dict__,200)
+    except Exception as e:
+      return self.json_responder.response(str(e), None, 400)
