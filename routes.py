@@ -1,10 +1,12 @@
 from flask import Flask, jsonify, request
 from jwt_utils import generar_token, verificar_token
 from controllers.usuarios_controllers import UsuarioController
+from controllers.roles_controllers import RolesController
 import pdb
 
 app = Flask(__name__)
 usuario_controller = UsuarioController()
+roles_controller = RolesController()
 
 @app.route('/login', methods=['POST'])
 def login():
@@ -134,6 +136,65 @@ def reset_password():
   
   if payload:
     response_json = usuario_controller.recuperar_contra(request.json)
+    return jsonify(response_json), response_json["status"]
+  else:
+    return jsonify({'error': 'Token inválido o expirado.'}), 400
+
+@app.route('/rol/create', methods=["POST"])
+def create_rol():
+  token = request.headers.get('Authorization')
+  payload = verificar_token(token)
+  
+  if payload:
+    response_json = roles_controller.save(request.json, payload)
+    return jsonify(response_json), response_json["status"]
+  else:
+    return jsonify({'error': 'Token inválido o expirado.'}), 400
+
+@app.route('/rol/get_by_detail', methods=['GET'])
+def get_rol_by_detail():
+  token = request.headers.get('Authorization')
+  payload = verificar_token(token)
+  detail = request.args.get('detail')
+  
+  if not detail:
+    return jsonify({'error': 'Falta el parámetro details'}), 400
+  
+  if payload:
+    response_json = roles_controller.get_by_detail(detail)
+    return jsonify(response_json), response_json["status"]
+  else:
+    return jsonify({'error': 'Token invalido o expirado'}), 401
+
+@app.route('/rol/update', methods=['POST'])
+def update_rol():
+  token = request.headers.get('Authorization')
+  payload = verificar_token(token)
+  
+  if payload:
+    response_json = roles_controller.update(request.json)
+    return jsonify(response_json), response_json["status"]
+  else:
+    return jsonify({'error': 'Token inválido o expirado.'}), 400
+
+@app.route('/rol/delete', methods=['POST'])
+def delete_rol():
+  token = request.headers.get('Authorization')
+  payload = verificar_token(token)
+  
+  if payload:
+    response_json = roles_controller.delete(request.json)
+    return jsonify(response_json), response_json["status"]
+  else:
+    return jsonify({'error': 'Token inválido o expirado.'}), 400
+
+@app.route('/rol/assign', methods=['POST'])
+def assign_rol():
+  token = request.headers.get('Authorization')
+  payload = verificar_token(token)
+  
+  if payload:
+    response_json = roles_controller.assign_role(request.json)
     return jsonify(response_json), response_json["status"]
   else:
     return jsonify({'error': 'Token inválido o expirado.'}), 400

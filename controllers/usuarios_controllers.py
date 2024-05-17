@@ -16,17 +16,17 @@ class UsuarioController:
     try:
       
       if not "message" in json:
-        return self.json_responder.json_response("El campo message es obligatorio",None,422)
+        return self.json_responder.response("El campo message es obligatorio",None,422)
       if json["message"] is None:
-        return self.json_responder.json_response("El campo message no puede estar en blanco",None, 422)
+        return self.json_responder.response("El campo message no puede estar en blanco",None, 422)
       if not "cellphone" in json:
-        return self.json_responder.json_response("El campo cellphone es obligatorio",None,422)
+        return self.json_responder.response("El campo cellphone es obligatorio",None,422)
       if json["cellphone"] is None:
-        return self.json_responder.json_response("El campo cellphone no puede estar en blanco",None,422)
+        return self.json_responder.response("El campo cellphone no puede estar en blanco",None,422)
       
       result = self.sns_service.enviar_notificacion(json["message"], json["cellphone"])
       
-      return self.json_responder.json_response("Mensaje enviado",result,200)
+      return self.json_responder.response("Mensaje enviado",result,200)
     except Exception as e:
       raise ValueError("Error al enviar notificación:", e)
 
@@ -36,14 +36,14 @@ class UsuarioController:
   def create_user(self, json_data):
     try:
       if json_data["password"] != json_data["confirm_password"]:
-        return self.json_responder.json_response("Las contraseñas no coinciden", None, 422)
+        return self.json_responder.response("Las contraseñas no coinciden", None, 422)
       
       nuevo_usuario = UsuarioModel(email=json_data["email"], nickname=json_data["nickname"], encrypted_password=json_data["password"], cellphone=int(json_data["cellphone"]))
       nuevo_usuario.save()
       
-      return self.json_responder.json_response("registro exitoso", nuevo_usuario.__dict__, 200)
+      return self.json_responder.response("registro exitoso", nuevo_usuario.__dict__, 200)
     except Exception as e:
-       return self.json_responder.json_response(str(e), None, 400)
+       return self.json_responder.response(str(e), None, 400)
      
   def update_user(self, current_user,  json):
     try:
@@ -60,29 +60,29 @@ class UsuarioController:
       
       update_user = self.usuario_model.update(email, nickname, cellphone, current_user)
       
-      return self.json_responder.json_response("Actualación exitosa", update_user.__dict__, 200)
+      return self.json_responder.response("Actualación exitosa", update_user.__dict__, 200)
     except Exception as e:
-      return self.json_responder.json_response(str(e),None,400)
+      return self.json_responder.response(str(e),None,400)
     
   def consultar_usuario(self, email):
     try:
       if email is None:
-        return self.json_responder.json_response("El email es obligatorio", None, 422)
+        return self.json_responder.response("El email es obligatorio", None, 422)
       
       user = self.usuario_model.consultar_usuario_por_email(email)
-      return self.json_responder.json_response("Consulta exitosa", user.__dict__, 200)
+      return self.json_responder.response("Consulta exitosa", user.__dict__, 200)
     except Exception as e:
-      return self.json_responder.json_response(str(e), None, 400)
+      return self.json_responder.response(str(e), None, 400)
     
   def eliminar_usuario(self, user_id):
     try:
       if user_id is None:
-        return self.json_responder.json_response("El id del usuario es obligatorio", None, 422)
+        return self.json_responder.response("El id del usuario es obligatorio", None, 422)
       
       result = self.usuario_model.eliminar_usuario(user_id)
-      return self.json_responder.json_response("Se elimino usuario correctamente", result.__dict__, 200)
+      return self.json_responder.response("Se elimino usuario correctamente", result.__dict__, 200)
     except Exception as e:
-      return self.json_responder.json_response(str(e), None, 400)
+      return self.json_responder.response(str(e), None, 400)
     
   def actualizar_contra(self, json, current_user):
     try:
@@ -97,64 +97,64 @@ class UsuarioController:
       
       user = self.usuario_model.actualizar_contra(password, current_user["user_id"])
       
-      return self.json_responder.json_response("Constraseña actualizada", user.__dict__, 200)
+      return self.json_responder.response("Constraseña actualizada", user.__dict__, 200)
     except Exception as e:
-      return self.json_responder.json_response(str(e),None,400)
+      return self.json_responder.response(str(e),None,400)
     
   def enviar_token_recuperacion(self, json):
     try:
       if not "user_id" in json:
-            return self.json_responder.json_response("El campo cellphone es obligatorio",None,422)
+            return self.json_responder.response("El campo cellphone es obligatorio",None,422)
       if json["user_id"] is None:
-        return self.json_responder.json_response("El campo cellphone no puede estar en blanco",None,422)
+        return self.json_responder.response("El campo cellphone no puede estar en blanco",None,422)
       if not "cellphone" in json:
-            return self.json_responder.json_response("El campo cellphone es obligatorio",None,422)
+            return self.json_responder.response("El campo cellphone es obligatorio",None,422)
       if json["cellphone"] is None:
-        return self.json_responder.json_response("El campo cellphone no puede estar en blanco",None,422)
+        return self.json_responder.response("El campo cellphone no puede estar en blanco",None,422)
       
       reset_password = generar_token_recuperacion()
       
       user = self.usuario_model.guardar_token_recuperacion(reset_password, json["user_id"])
       result = self.sns_service.enviar_notificacion(f"su token de recuperacion es: {reset_password}", json["cellphone"])
       
-      if result["ResponseMetadata"]["HTTPStatusCode"] is not 200:
-        return self.json_responder.json_response("El campo cellphone no puede estar en blanco",result,422)
+      if result["ResponseMetadata"]["HTTPStatusCode"] != 200:
+        return self.json_responder.response("El campo cellphone no puede estar en blanco",result,422)
 
-      return self.json_responder.json_response("Constraseña actualizada", user.__dict__, 200)
+      return self.json_responder.response("Constraseña actualizada", user.__dict__, 200)
     except Exception as e:
-      return self.json_responder.json_response(str(e),None,400)
+      return self.json_responder.response(str(e),None,400)
     
   def recuperar_contra(self, json):
     try:
       if not "user_id" in json:
-        return self.json_responder.json_response("El campo user_id es obligatorio",None,422)
+        return self.json_responder.response("El campo user_id es obligatorio",None,422)
       if json["user_id"] is None:
-        return self.json_responder.json_response("El campo user_id no puede estar en blanco",None, 422)
+        return self.json_responder.response("El campo user_id no puede estar en blanco",None, 422)
       if not "recovery_token" in json:
-        return self.json_responder.json_response("El campo recovery_token es obligatorio",None,422)
+        return self.json_responder.response("El campo recovery_token es obligatorio",None,422)
       if json["recovery_token"] is None:
-        return self.json_responder.json_response("El campo recovery_token no puede estar en blanco",None,422)
+        return self.json_responder.response("El campo recovery_token no puede estar en blanco",None,422)
       if not "password" in json:
-        return self.json_responder.json_response("El campo password es obligatorio",None,422)
+        return self.json_responder.response("El campo password es obligatorio",None,422)
       if json["password"] is None:
-        return self.json_responder.json_response("El campo password no puede estar en blanco",None,422)
+        return self.json_responder.response("El campo password no puede estar en blanco",None,422)
       if not "confirm_password" in json:
-        return self.json_responder.json_response("El campo confirm_password es obligatorio",None,422)
+        return self.json_responder.response("El campo confirm_password es obligatorio",None,422)
       if json["confirm_password"] is None:
-        return self.json_responder.json_response("El campo confirm_password no puede estar en blanco",None,422)
+        return self.json_responder.response("El campo confirm_password no puede estar en blanco",None,422)
       
       user = self.usuario_model.obtener_usuario_por_id(json["user_id"])
       if user is None:
-        return self.json_responder.json_response("No se encontro usuario con el id indicado",None,422)
+        return self.json_responder.response("No se encontro usuario con el id indicado",None,422)
       
       if json["recovery_token"] != user.reset_password_token:
-        return self.json_responder.json_response("El token para recuperar la contraseña no es correcto",None,422)
+        return self.json_responder.response("El token para recuperar la contraseña no es correcto",None,422)
       if json["password"] != json["confirm_password"]:
-          return self.json_responder.json_response("Las contraseñas no coinciden",None,422)
+          return self.json_responder.response("Las contraseñas no coinciden",None,422)
       
       password = encrypt_password(json["password"])
       result = self.usuario_model.actualizar_contra(password, user.id)
       
-      return self.json_responder.json_response("Mensaje enviado",result.__dict__,200)
+      return self.json_responder.response("Mensaje enviado",result.__dict__,200)
     except Exception as e:
       raise ValueError("Error al enviar notificación:", e)
