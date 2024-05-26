@@ -21,7 +21,7 @@ def generar_token(payload):
     token_content = {"user_id": user.id, "email": user.email, "nickname": user.nickname, "cellphone": user.cellphone, "encrypted_password": user.encrypted_password}
     token = jwt.encode(token_content, SECRET_KEY, algorithm='HS256')
     
-    return {'response': {"message":"token generado", "json": token}, "status": 200}
+    return {'response': {"message":"token generado", "json": {"token": token}}, "status": 200}
 
 def verificar_token(token):
     """
@@ -48,7 +48,7 @@ def verificar_token(token):
         # Manejar el error...
         return None
       
-def generar_token_recuperacion(longitud=32):
+def generar_token_recuperacion(longitud=10):
     # Genera un token de recuperación seguro con la longitud especificada
     token = secrets.token_urlsafe(longitud)
     return token

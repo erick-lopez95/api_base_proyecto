@@ -1,0 +1,6 @@
+pip install jwt
+pip install secrets
+pip install pdb
+pip install pymysql
+pip install boto3
+pip install bcrypt
