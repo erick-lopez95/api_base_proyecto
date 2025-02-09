@@ -8,6 +8,10 @@ app = Flask(__name__)
 usuario_controller = UsuarioController()
 roles_controller = RolesController()
 
+@app.route('/api/v1/hello', methods=['GET'])
+def hello_world():
+  return jsonify(message="Hello, World!")
+
 @app.route('/login', methods=['POST'])
 def login():
     # pdb.set_trace() punto de interrupcion usando la libreria pdb
