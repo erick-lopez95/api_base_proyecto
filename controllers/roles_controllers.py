@@ -76,7 +76,8 @@ class RolesController:
       
       exist = self.user_roles.get_by_user_and_rol(json["user_id"], json["rol_id"])
       if exist is not None:
-        return self.json_responder.response(f"El usuario usuario con id {json["user_id"]} ya cuenta con el rol {json["rol_id"], None, 422}")
+        return self.json_responder.response(f"El usuario usuario con id {json['user_id']} ya cuenta con el rol {json['rol_id']}", None, 422)
+
       
       user_rol = self.roles_model.assign_role(json["rol_id"], json["user_id"])
       return self.json_responder.response("Se aigno el rol correctamente", user_rol.__dict__,200)
@@ -96,7 +97,7 @@ class RolesController:
       
       rol_assign = self.user_roles.get_by_user_and_rol(json["user_id"], json["rol_id"])
       if rol_assign is None:
-        return self.json_responder.response(f"El usuario usuario con id {json["user_id"]} no cuenta con el rol {json["rol_id"], None, 422}")
+        return self.json_responder.response(f"El usuario usuario con id {json['user_id']} no cuenta con el rol {json['rol_id'], None, 422}")
       
       self.user_roles.delete_by_userId_and_roleId(json["user_id"], json["rol_id"])
       

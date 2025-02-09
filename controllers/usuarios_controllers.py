@@ -115,7 +115,7 @@ class UsuarioController:
       reset_password = generar_token_recuperacion()
       
       user = self.usuario_model.guardar_token_recuperacion(reset_password, json["user_id"])
-      result = self.sns_service.enviar_notificacion(f"su token de recuperacion es: {reset_password}", json["cellphone"])
+      result = self.sns_service.enviar_notificacion(f"su token de recuperacion es: {reset_password}", json['cellphone'])
       
       if result["ResponseMetadata"]["HTTPStatusCode"] != 200:
         return self.json_responder.response("El campo cellphone no puede estar en blanco",result,422)
