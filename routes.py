@@ -31,7 +31,7 @@ def protected_route():
     if payload:
         # El token es válido, puedes acceder a la información del payload
         role = payload['role']
-        return jsonify({'message': f'Acceso concedido para el usuario {payload['email']} con rol {role}.'})
+        return jsonify({'message': f'Acceso concedido para el usuario {payload["email"]} con rol {role}.'})
     else:
         return jsonify({'error': 'Token inválido o expirado.'}), 401
 
